@@ -29,8 +29,7 @@ const quizQuestions: Question[] = [
       type: "multi_select",
       question: "Select all JavaScript data types.",
       options: ["String", "Number", "Boolean", "Array", "Object"],
-      answer: ["String", "Number", "Boolean", "Object"],
-      image: "https://images.unsplash.com/photo-1581091870622-6315b8fc7a87?w=800&q=80"
+      answer: ["String", "Number", "Boolean", "Object"]
     },
     {
       id: 5,
