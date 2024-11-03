@@ -7,6 +7,7 @@ import {
   CardContent,
   CardFooter,
 } from "./ui/card";
+import { formatTime } from "@/lib/utils";
 
 interface Props {
   score: number;
@@ -20,6 +21,7 @@ const ShowResult = ({ totalQuestions, handleStart }: Props) => {
   const percentage = Math.round((resultStat?.totalScore / totalQuestions) * 100);
   const incorrect = resultStat?.incorrect || 0;
   const correct = resultStat?.correct || 0;
+  const totalTimeTaken = formatTime(resultStat?.totalTime || 0);
 
   const fetchResult = async () => {
     try {
@@ -70,6 +72,7 @@ const ShowResult = ({ totalQuestions, handleStart }: Props) => {
             <p className="text-gray-600">
               You scored {correct} out of {totalQuestions} questions correctly
             </p>
+            <p className="text-gray-600">Total Time Taken: {totalTimeTaken} minutes</p>
           </div>
 
           {/* Results summary with your styling */}
