@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quizzizz
+A simple Quiz App built with Next.js that lets users answer multiple-choice questions, track scores, and view results. This app is structured to store quiz questions, evaluate user answers, and maintain a tally of correct and incorrect answers along with the time taken per question.
+
+## Features
+- **Multiple-Choice Questions** - Supports single-select and multi-select question types.
+- **Answer Evaluation**: Verifies answers on each submission and updates score.
+- **Retry Option**: Allows users to reset their scores and reattempt the quiz.
 
 ## Getting Started
 
-First, run the development server:
+First clone the repo
+```bash
+git clone https://github.com/munjalSaksham71/quizzizz.git
+cd quizzizz
+```
+
+Then download the node_modules by running 
+```bash
+npm install
+# or
+yarn
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Customization
+- **Adding Questions**: Add more questions in app/data/questions.ts to expand the quiz.
+- **Change Scoring Logic**: Modify the scoring and time-tracking logic in app/api/questions/route.ts to adapt the quiz for different formats or points per question.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
+This project is licensed under the MIT License.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
