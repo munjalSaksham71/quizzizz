@@ -1,45 +1,70 @@
-import { Question } from "@/lib/types/question";
+import {
+  getQuizResults,
+  quizQuestions,
+  resetQuizResults,
+  updateQuizResults,
+} from "@/app/data/questions";
+import { NextRequest, NextResponse } from "next/server";
 
-const quizQuestions: Question[] = [
-    {
-      id: 1,
-      type: "single_select",
-      question: "Which HTML tag is used to define a hyperlink?",
-      options: ["<link>", "<a>", "<href>", "<nav>"],
-      answer: "<a>",
-      image: "https://images.unsplash.com/photo-1504164996022-09080787b6b3?w=800&q=80"
-    },
-    {
-      id: 2,
-      type: "single_select",
-      question: "Which JavaScript framework is known for its virtual DOM?",
-      options: ["Angular", "Vue", "React", "Svelte"],
-      answer: "React",
-      image: "https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg"
-    },
-    {
-      id: 3,
-      type: "multi_select",
-      question: "Which of the following are CSS layout techniques?",
-      options: ["Grid", "Flexbox", "Box Model", "Bootstrap"],
-      answer: ["Grid", "Flexbox", "Box Model"]
-    },
-    {
-      id: 4,
-      type: "multi_select",
-      question: "Select all JavaScript data types.",
-      options: ["String", "Number", "Boolean", "Array", "Object"],
-      answer: ["String", "Number", "Boolean", "Object"]
-    },
-    {
-      id: 5,
-      type: "single_select",
-      question: "Which HTTP method is typically used to retrieve data from a server?",
-      options: ["POST", "DELETE", "PUT", "GET"],
-      answer: "GET"
-    }
-  ];
-  
-export async function GET() {
-  return new Response(JSON.stringify(quizQuestions));
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+
+  // Check for the 'action' query parameter
+  const action = searchParams.get("action");
+
+  // Fetch quiz questions
+  if (action === "get_questions") {
+    const questionsWithoutAnswer = quizQuestions.map(
+      ({ answer, ...rest }) => rest
+    );
+    return NextResponse.json(questionsWithoutAnswer);
+  }
+
+  // Fetch quiz results
+  if (action === "get_results") {
+    const results = getQuizResults();
+    return NextResponse.json(results);
+  }
+
+  if (action === "reset_results") {
+    resetQuizResults();
+    return NextResponse.json({ message: "Results reset successfully" });
+  }
+
+  // Handle unknown endpoints or actions
+  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+}
+
+export async function POST(req: NextRequest) {
+  const { questionId, selectedAnswer, timeTaken } = await req.json();
+
+  // Check if the question exists
+  const question = quizQuestions.find((q) => q.id === questionId);
+
+  if (!question) {
+    return NextResponse.json({ error: "Question not found" }, { status: 404 });
+  }
+
+  // Evaluate the answer
+  let isCorrect = false;
+  if (question.type === "single_select") {
+    isCorrect = question.answer === selectedAnswer;
+  } else if (question.type === "multi_select") {
+    const selectedAnswers = selectedAnswer as string[];
+    const correctAnswers = question.answer as string[];
+    isCorrect =
+      selectedAnswers.length === correctAnswers.length &&
+      selectedAnswers.every((answer) => correctAnswers.includes(answer)) &&
+      correctAnswers.every((answer) => selectedAnswers.includes(answer));
+  }
+
+  if (isCorrect) {
+    updateQuizResults(1, 0, 1, timeTaken);
+  } else {
+    updateQuizResults(0, 1, 0, timeTaken);
+  }
+
+  return NextResponse.json({
+    message: "successfully saved!!",
+  });
 }

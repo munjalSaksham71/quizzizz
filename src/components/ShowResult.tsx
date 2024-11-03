@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -14,10 +14,38 @@ interface Props {
   handleStart: () => void;
 }
 
-const ShowResult = ({ score, totalQuestions, handleStart }: Props) => {
+const ShowResult = ({ totalQuestions, handleStart }: Props) => {
+  const [resultStat, setResultStat] = useState<any>({});
 
-  const percentage = Math.round((score / totalQuestions) * 100);
-  const incorrect = totalQuestions - score;
+  const percentage = Math.round((resultStat?.totalScore / totalQuestions) * 100);
+  const incorrect = resultStat?.incorrect || 0;
+  const correct = resultStat?.correct || 0;
+
+  const fetchResult = async () => {
+    try {
+      const response = await fetch("/api/questions?action=get_results");
+      const data = await response.json();
+      setResultStat(data);
+    } catch (error) {
+      console.error("error: ", error);
+    }
+  };
+
+  const resetQuiz = async() => {
+    try {
+      const response = await fetch("/api/questions?action=reset_results");
+      const data = await response.json();
+      setResultStat(data);
+    } catch (error) {
+      console.error("error: ", error);
+    } finally {
+      handleStart();
+    }
+  }
+
+  useEffect(() => {
+    fetchResult();
+  }, []);
 
   return (
     <div className="min-h-screen w-[100vw] flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-[#F3F0FF] to-[#E3D9FF]">
@@ -40,7 +68,7 @@ const ShowResult = ({ score, totalQuestions, handleStart }: Props) => {
                 : "Keep Practicing! 💪"}
             </h3>
             <p className="text-gray-600">
-              You scored {score} out of {totalQuestions} questions correctly
+              You scored {correct} out of {totalQuestions} questions correctly
             </p>
           </div>
 
@@ -52,7 +80,7 @@ const ShowResult = ({ score, totalQuestions, handleStart }: Props) => {
                   Correct Answers
                 </span>
                 <span className="float-right font-semibold text-green-600">
-                  {score}
+                  {correct}
                 </span>
               </div>
             </div>
@@ -71,7 +99,7 @@ const ShowResult = ({ score, totalQuestions, handleStart }: Props) => {
 
         <CardFooter className="flex justify-center p-4 md:p-6">
           <Button
-            onClick={handleStart}
+            onClick={resetQuiz}
             size="lg"
             className="py-6 text-white font-semibold rounded-full bg-[#ED4E4E] hover:bg-[#E13F3F] transition-all duration-200"
           >

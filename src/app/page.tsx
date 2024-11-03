@@ -6,21 +6,20 @@ import { useEffect, useState } from "react";
 
 const quizInitialState = {
   currentQuestionIndex: 0,
-  score: 0,
-  answers: {},
   showResults: false,
+  answers: {}
 };
-
 export default function Home() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [started, setStarted] = useState(false);
   const [quizState, setQuizState] = useState(quizInitialState);
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
   const fetchQuestions = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/questions");
+      const response = await fetch("/api/questions?action=get_questions");
       const data = await response.json();
       setQuestions(data);
     } catch (error) {
@@ -55,7 +54,7 @@ export default function Home() {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <ShowResult
-          score={quizState.score}
+          score={quizState.currentQuestionIndex}
           totalQuestions={questions.length}
           handleStart={handleStart}
         />
@@ -69,6 +68,8 @@ export default function Home() {
         questions={questions}
         quizState={quizState}
         setQuizState={setQuizState}
+        questionStartTime={questionStartTime}
+        setQuestionStartTime={setQuestionStartTime}
       />
     </div>
   );

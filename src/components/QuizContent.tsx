@@ -7,9 +7,11 @@ interface Props {
   questions: Question[];
   quizState: any;
   setQuizState: any;
+  questionStartTime: number;
+  setQuestionStartTime: any;
 }
 
-const QuizContent = ({ questions, quizState, setQuizState }: Props) => {
+const QuizContent = ({ questions, quizState, setQuizState, questionStartTime, setQuestionStartTime }: Props) => {
   const currentQuestion = questions[quizState.currentQuestionIndex];
 
   const handleAnswerSelect = (answer: string | string[]) => {
@@ -24,32 +26,30 @@ const QuizContent = ({ questions, quizState, setQuizState }: Props) => {
 
   const isLast = quizState.currentQuestionIndex === questions.length - 1;
 
-  const handleNext = () => {
-    // Handling Logic for Score
-    let isCorrect = false;
+  const handleNext = async () => {
+    const currentQuestion = questions[quizState.currentQuestionIndex];
+    const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000); 
 
-    if (currentQuestion.type === "single_select") {
-      isCorrect =
-        currentQuestion.answer ===
-        quizState.answers[quizState.currentQuestionIndex];
-    } else if (currentQuestion.type === "multi_select") {
-      const selectedAnswer = quizState.answers[
-        quizState.currentQuestionIndex
-      ] as string[];
-      const correctAnswer = currentQuestion.answer as string[];
-
-      isCorrect =
-        selectedAnswer.length === correctAnswer.length &&
-        selectedAnswer.every((answer) => correctAnswer.includes(answer)) &&
-        correctAnswer.every((answer) => selectedAnswer.includes(answer));
-    }
+    // POST CALL TO SAVE ANSWER
+    await fetch("/api/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        questionId: currentQuestion?.id,
+        selectedAnswer: quizState?.answers[quizState.currentQuestionIndex],
+        timeTaken: timeTaken,
+      }),
+    });
 
     setQuizState((prev: any) => ({
       ...prev,
-      score: prev.score + (isCorrect ? 1 : 0),
       currentQuestionIndex: prev.currentQuestionIndex + 1,
       showResults: prev.currentQuestionIndex === questions.length - 1,
     }));
+
+    setQuestionStartTime(Date.now());
   };
 
   return (
