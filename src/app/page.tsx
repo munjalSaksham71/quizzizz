@@ -16,6 +16,15 @@ export default function Home() {
   const [quizState, setQuizState] = useState(quizInitialState);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
+  const resetQuizResults = async () => {
+    try {
+      const response = await fetch("/api/questions?action=reset_results");
+      return response;
+    } catch (error) {
+      console.error("error: ", error);
+    }
+  }
+
   const fetchQuestions = async () => {
     try {
       setLoading(true);
@@ -30,6 +39,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    resetQuizResults();
     fetchQuestions();
   }, []);
 
@@ -40,7 +50,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-[#F3F0FF] to-[#E3D9FF]">
         Loading...
       </div>
     );
