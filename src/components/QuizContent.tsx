@@ -11,7 +11,13 @@ interface Props {
   setQuestionStartTime: any;
 }
 
-const QuizContent = ({ questions, quizState, setQuizState, questionStartTime, setQuestionStartTime }: Props) => {
+const QuizContent = ({
+  questions,
+  quizState,
+  setQuizState,
+  questionStartTime,
+  setQuestionStartTime,
+}: Props) => {
   const currentQuestion = questions[quizState.currentQuestionIndex];
 
   const handleAnswerSelect = (answer: string | string[]) => {
@@ -28,7 +34,7 @@ const QuizContent = ({ questions, quizState, setQuizState, questionStartTime, se
 
   const handleNext = async () => {
     const currentQuestion = questions[quizState.currentQuestionIndex];
-    const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000); 
+    const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
 
     // POST CALL TO SAVE ANSWER
     await fetch("/api/questions", {
@@ -54,6 +60,9 @@ const QuizContent = ({ questions, quizState, setQuizState, questionStartTime, se
 
   return (
     <div className="min-h-screen w-[100vw] flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-[#F3F0FF] to-[#E3D9FF]">
+      <p className="text-lg font-medium text-violet-700">
+        Question {quizState.currentQuestionIndex + 1} of {questions.length}
+      </p>
       {/* Scrollable content */}
       <div className="flex flex-col items-center justify-between p-8 max-h-[700px] overflow-y-auto">
         <QuizCard
