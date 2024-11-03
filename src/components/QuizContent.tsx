@@ -25,18 +25,30 @@ const QuizContent = ({ questions, quizState, setQuizState }: Props) => {
   const isLast = quizState.currentQuestionIndex === questions.length - 1;
 
   const handleNext = () => {
-    if (isLast) {
-      setQuizState((prev: any) => ({
-        ...prev,
-        showResults: true,
-      }));
+    // Handling Logic for Score
+    let isCorrect = false;
 
-      return;
+    if (currentQuestion.type === "single_select") {
+      isCorrect =
+        currentQuestion.answer ===
+        quizState.answers[quizState.currentQuestionIndex];
+    } else if (currentQuestion.type === "multi_select") {
+      const selectedAnswer = quizState.answers[
+        quizState.currentQuestionIndex
+      ] as string[];
+      const correctAnswer = currentQuestion.answer as string[];
+
+      isCorrect =
+        selectedAnswer.length === correctAnswer.length &&
+        selectedAnswer.every((answer) => correctAnswer.includes(answer)) &&
+        correctAnswer.every((answer) => selectedAnswer.includes(answer));
     }
-    
+
     setQuizState((prev: any) => ({
       ...prev,
+      score: prev.score + (isCorrect ? 1 : 0),
       currentQuestionIndex: prev.currentQuestionIndex + 1,
+      showResults: prev.currentQuestionIndex === questions.length - 1,
     }));
   };
 
