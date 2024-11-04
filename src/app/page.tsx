@@ -39,9 +39,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    resetQuizResults();
-    fetchQuestions();
-  }, []);
+    if(started) {
+      resetQuizResults();
+      fetchQuestions();
+    }
+  }, [started]);
 
   const handleStart = () => {
     setStarted(true);
